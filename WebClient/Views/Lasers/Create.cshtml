@@ -1,0 +1,26 @@
+﻿@model WebClient.DTOs.Laser.LaserCreateUpdateDto
+@{ ViewData["Title"] = "Создать лазер"; }
+
+<h1>Создать</h1>
+<h4>Лазер</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div class="form-group mb-3">
+                <label asp-for="X" class="control-label"></label>
+                <input asp-for="X" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Y" class="control-label"></label>
+                <input asp-for="Y" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>

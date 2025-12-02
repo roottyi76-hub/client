@@ -1,0 +1,33 @@
+﻿@{ ViewData["Title"] = "Тренд интенсивности"; }
+<h1>@ViewData["Title"]</h1>
+
+<div style="width: 90%; margin: auto;">
+    <canvas id="intensityChart"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('intensityChart');
+        const chartLabels = @Html.Raw(ViewBag.ChartLabelsJson);
+        const chartValues = @Html.Raw(ViewBag.ChartValuesJson);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Интенсивность',
+                    data: chartValues,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+    </script>
+}

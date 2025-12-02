@@ -1,0 +1,47 @@
+﻿@model IEnumerable<WebClient.DTOs.Measurement.MeasurementDto>
+@{
+    ViewData["Title"] = "Измерения";
+    var intensitySort = ViewData["IntensitySortParm"];
+    var dateSort = ViewData["DateSortParm"];
+    var laserIdSort = ViewData["LaserIdSortParm"];
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* --- ИЗМЕНЕНИЕ 1: Кнопка "Создать" будет видна только редакторам --- *@
+@if (User.IsInRole("Editor"))
+{
+    <p><a asp-action="Create" class="btn btn-primary">Создать новое измерение</a></p>
+}
+
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th><a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">ID</a></th>
+        <th><a asp-action="Index" asp-route-sortOrder="@intensitySort">Интенсивность</a></th>
+        <th><a asp-action="Index" asp-route-sortOrder="@dateSort">Дата</a></th>
+        <th><a asp-action="Index" asp-route-sortOrder="@laserIdSort">ID Лазера</a></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.MeasurementId</td>
+            <td>@item.Intensity</td>
+            <td>@item.MeasurementDate.ToLocalTime().ToString("g")</td>
+            <td>@item.LaserId</td>
+            <td>
+                @* --- ИЗМЕНЕНИЕ 2: Кнопки действий будут видны только редакторам --- *@
+                @if (User.IsInRole("Editor"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.MeasurementId" class="btn btn-sm btn-outline-primary">Редактировать</a>
+                    <a asp-action="Delete" asp-route-id="@item.MeasurementId" class="btn btn-sm btn-outline-danger">Удалить</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

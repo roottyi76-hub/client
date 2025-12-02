@@ -1,0 +1,44 @@
+﻿@model IEnumerable<WebClient.DTOs.JoinedDataDto>
+@{
+    ViewData["Title"] = "Объединенные данные";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">ID Измерения</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["IntensitySortParm"]">Интенсивность</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">Дата</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["LaserIdSortParm"]">ID Лазера</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["XSortParm"]">Коорд. X</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["YSortParm"]">Коорд. Y</a>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.MeasurementId</td>
+            <td>@item.Intensity</td>
+            <td>@item.MeasurementDate.ToString("g")</td>
+            <td>@item.LaserId</td>
+            <td>@item.LaserX</td>
+            <td>@item.LaserY</td>
+        </tr>
+    }
+    </tbody>
+</table>

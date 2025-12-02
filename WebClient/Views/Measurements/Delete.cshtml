@@ -1,0 +1,23 @@
+﻿@model WebClient.DTOs.Measurement.MeasurementDto
+@{ ViewData["Title"] = "Удаление"; }
+
+<h1>Удаление</h1>
+<h3>Вы уверены, что хотите удалить это измерение?</h3>
+<div>
+    <h4>Измерение #@Model.MeasurementId</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-4">Интенсивность</dt>
+        <dd class = "col-sm-8">@Model.Intensity</dd>
+        <dt class = "col-sm-4">Дата</dt>
+        <dd class = "col-sm-8">@Model.MeasurementDate.ToLocalTime().ToString("g")</dd>
+        <dt class = "col-sm-4">ID Лазера</dt>
+        <dd class = "col-sm-8">@Model.LaserId</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MeasurementId" />
+        <input type="submit" value="Удалить" class="btn btn-danger" /> |
+        <a asp-action="Index">Назад к списку</a>
+    </form>
+</div>

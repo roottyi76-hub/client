@@ -1,0 +1,172 @@
+﻿@{
+    ViewData["Title"] = "Данные в реальном времени";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        
+        <h3>Интенсивность (Освещенность)</h3>
+        <div style="width: 100%; margin-bottom: 20px;">
+            <canvas id="lightChart"></canvas>
+        </div>
+
+        <h3>Температура</h3>
+        <div style="width: 100%; margin-bottom: 20px;">
+            <canvas id="tempChart"></canvas>
+        </div>
+
+        <h3>Влажность</h3>
+        <div style="width: 100%; margin-bottom: 20px;">
+            <canvas id="humidityChart"></canvas>
+        </div>
+
+    </div>
+    <div class="col-md-4">
+        <h3>Текущие значения</h3>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Температура
+                <span class="badge bg-primary rounded-pill" id="temp-value">--.- °C</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Влажность
+                <span class="badge bg-primary rounded-pill" id="hum-value">-- %</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Освещенность
+                <span class="badge bg-primary rounded-pill" id="light-value">-- %</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // --- 1. ИНИЦИАЛИЗАЦИЯ ТРЕХ ГРАФИКОВ ---
+
+    // График Освещенности
+    const ctxLight = document.getElementById('lightChart');
+    const lightChart = new Chart(ctxLight, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Освещенность (%)',
+                data: [],
+                borderColor: 'rgb(255, 205, 86)', // Желтый
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: { y: { min: 0, max: 100, title: { display: true, text: '%' } } }
+        }
+    });
+
+    // График Температуры
+    const ctxTemp = document.getElementById('tempChart');
+    const tempChart = new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Температура (°C)',
+                data: [],
+                borderColor: 'rgb(255, 99, 132)', // Красный
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: { y: { title: { display: true, text: '°C' } } }
+        }
+    });
+
+    // График Влажности
+    const ctxHumidity = document.getElementById('humidityChart');
+    const humidityChart = new Chart(ctxHumidity, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Влажность (%)',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)', // Синий
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: { y: { min: 0, max: 100, title: { display: true, text: '%' } } }
+        }
+    });
+
+
+    /// --- 2. НАСТРОЙКА SIGNALR ---
+
+    // 👈 ПОЛУЧАЕМ URL СЕРВЕРА ИЗ C#
+    const serverBaseUrl = "@Html.Raw(ViewBag.ServerBaseUrl)";
+    // 👈 СОБИРАЕМ ПОЛНЫЙ URL ДЛЯ КОНЦЕНТРАТОРА
+    const hubUrl = new URL("/dataHub", serverBaseUrl).toString();
+
+    // Выводим в консоль для проверки
+    console.log("Connecting to SignalR at:", hubUrl);
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl) // 👈 ИСПОЛЬЗУЕМ ПОЛНЫЙ URL
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+
+    // --- 3. ФУНКЦИЯ-ПОМОЩНИК ДЛЯ ОБНОВЛЕНИЯ ОДНОГО ГРАФИКА ---
+    function addDataToChart(chart, label, data) {
+        chart.data.labels.push(label);
+        chart.data.datasets[0].data.push(data);
+
+        // Ограничим график 20-ю точками
+        if (chart.data.labels.length > 20) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+        }
+
+        chart.update();
+    }
+
+
+    // --- 4. ОБРАБОТЧИК ДАННЫХ ---
+    connection.on("ReceiveEnvData", (data) => {
+        console.log("New env data received:", data);
+        
+        // 1. Обновляем плашки
+        document.getElementById('temp-value').innerText = data.temperature.toFixed(1) + " °C";
+        document.getElementById('hum-value').innerText = data.humidity.toFixed(0) + " %";
+        document.getElementById('light-value').innerText = data.light.toFixed(0) + " %";
+
+        // 2. Получаем общую метку времени
+        const time = new Date().toLocaleTimeString();
+        
+        // 3. Обновляем каждый график по отдельности
+        addDataToChart(lightChart, time, data.light);
+        addDataToChart(tempChart, time, data.temperature);
+        addDataToChart(humidityChart, time, data.humidity);
+    });
+
+
+    // --- 5. ЗАПУСК СОЕДИНЕНИЯ (без изменений) ---
+    async function start() {
+        try {
+            await connection.start();
+            console.log("SignalR Connected.");
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 50); 
+        }
+    };
+
+    connection.onclose(async () => {
+        await start();
+    });
+
+    start();
+
+</script>
+}

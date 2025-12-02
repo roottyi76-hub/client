@@ -1,0 +1,31 @@
+﻿@{ ViewData["Title"] = "Расположение лазеров"; }
+<h1>@ViewData["Title"]</h1>
+
+<div style="width: 80%; margin: auto;">
+    <canvas id="laserChart"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('laserChart');
+        const chartData = @Html.Raw(ViewBag.ChartDataJson);
+
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Расположение лазеров',
+                    data: chartData,
+                    backgroundColor: 'rgb(255, 99, 132)'
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Координата X' } },
+                    y: { title: { display: true, text: 'Координата Y' } }
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,27 @@
+﻿@model WebClient.DTOs.Laser.LaserCreateUpdateDto
+@{ ViewData["Title"] = "Редактировать лазер"; }
+
+<h1>Редактировать</h1>
+<h4>Лазер #@ViewBag.LaserId</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <input type="hidden" name="id" value="@ViewBag.LaserId" />
+            <div class="form-group mb-3">
+                <label asp-for="X" class="control-label"></label>
+                <input asp-for="X" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Y" class="control-label"></label>
+                <input asp-for="Y" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>

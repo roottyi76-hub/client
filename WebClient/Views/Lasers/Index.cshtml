@@ -1,0 +1,46 @@
+﻿@model IEnumerable<WebClient.DTOs.Laser.LaserDto>
+@{
+    ViewData["Title"] = "Список лазеров";
+    var idSort = ViewData["IdSortParm"];
+    var xSort = ViewData["XSortParm"];
+    var ySort = ViewData["YSortParm"];
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* --- ИЗМЕНЕНИЕ 1: Кнопка "Создать" будет видна только редакторам --- *@
+@if (User.IsInRole("Editor"))
+{
+    <p><a asp-action="Create" class="btn btn-primary">Создать новый лазер</a></p>
+}
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th><a asp-action="Index" asp-route-sortOrder="@idSort">ID Лазера</a></th>
+        <th><a asp-action="Index" asp-route-sortOrder="@xSort">Координата X</a></th>
+        <th><a asp-action="Index" asp-route-sortOrder="@ySort">Координата Y</a></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.LaserId)</td>
+            <td>@Html.DisplayFor(modelItem => item.X)</td>
+            <td>@Html.DisplayFor(modelItem => item.Y)</td>
+            <td>
+                @* --- ИЗМЕНЕНИЕ 2: Кнопки действий будут видны только редакторам --- *@
+                @if (User.IsInRole("Editor"))
+                {
+                    @Html.ActionLink("Редактировать", "Edit", new { id=item.LaserId }) 
+                    <span>|</span>
+                    @Html.ActionLink("Удалить", "Delete", new { id=item.LaserId })
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
